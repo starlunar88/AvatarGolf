@@ -61,10 +61,11 @@ body {
     letter-spacing: 1px;
 }
 
-.company-name {
-    font-size: 14px;
-    color: #666;
-    font-weight: 500;
+.logo-image {
+    height: 50px;
+    width: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .title-section {
@@ -846,6 +847,203 @@ select:focus,
 textarea:focus {
     outline: 2px solid #3498db;
     outline-offset: 2px;
+}
+
+/* 라디오 버튼 스타일 */
+.radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #2c3e50;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    border: 2px solid transparent;
+}
+
+.radio-label:hover {
+    background: #e9ecef;
+    border-color: #3498db;
+}
+
+.radio-input {
+    display: none;
+}
+
+.radio-custom {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ddd;
+    border-radius: 50%;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.radio-input:checked + .radio-custom {
+    border-color: #3498db;
+    background: #3498db;
+}
+
+.radio-input:checked + .radio-custom::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+}
+
+.radio-input:checked ~ span {
+    color: #3498db;
+    font-weight: 600;
+}
+
+.club-radio-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+}
+
+/* 정확도 연습 버튼 */
+.accuracy-results {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 4px solid #27ae60;
+}
+
+.accuracy-results h4 {
+    margin-bottom: 15px;
+    color: #2c3e50;
+    font-size: 16px;
+}
+
+.attempt-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.attempt-btn {
+    width: 50px;
+    height: 50px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    color: #666;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.attempt-btn:hover {
+    border-color: #3498db;
+    background: #f8f9fa;
+}
+
+.attempt-btn.success {
+    background: #27ae60;
+    border-color: #27ae60;
+    color: white;
+}
+
+.attempt-btn.failure {
+    background: #e74c3c;
+    border-color: #e74c3c;
+    color: white;
+}
+
+.accuracy-summary {
+    display: flex;
+    justify-content: space-around;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.accuracy-summary span {
+    color: #2c3e50;
+}
+
+/* 거리 연습 입력 */
+.distance-results {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 4px solid #3498db;
+}
+
+.distance-results h4 {
+    margin-bottom: 15px;
+    color: #2c3e50;
+    font-size: 16px;
+}
+
+.distance-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.distance-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.distance-input-group label {
+    font-size: 12px;
+    color: #666;
+    font-weight: 600;
+}
+
+.distance-input {
+    padding: 8px 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.distance-input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.distance-summary {
+    display: flex;
+    justify-content: space-around;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.distance-summary span {
+    color: #2c3e50;
 }
 
 /* 스크롤바 스타일링 */
