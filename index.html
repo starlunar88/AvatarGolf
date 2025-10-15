@@ -382,9 +382,15 @@
                 const attempts = parseInt(this.value);
                 if (attempts > 0) {
                     generateAccuracyButtons(attempts);
-                    document.getElementById('accuracyResults').style.display = 'block';
+                    const accuracyResults = document.getElementById('accuracyResults');
+                    if (accuracyResults) {
+                        accuracyResults.style.display = 'block';
+                    }
                 } else {
-                    document.getElementById('accuracyResults').style.display = 'none';
+                    const accuracyResults = document.getElementById('accuracyResults');
+                    if (accuracyResults) {
+                        accuracyResults.style.display = 'none';
+                    }
                 }
             });
             
@@ -393,9 +399,15 @@
                 const attempts = parseInt(this.value);
                 if (attempts > 0) {
                     generateDistanceInputs(attempts);
-                    document.getElementById('distanceResults').style.display = 'block';
+                    const distanceResults = document.getElementById('distanceResults');
+                    if (distanceResults) {
+                        distanceResults.style.display = 'block';
+                    }
                 } else {
-                    document.getElementById('distanceResults').style.display = 'none';
+                    const distanceResults = document.getElementById('distanceResults');
+                    if (distanceResults) {
+                        distanceResults.style.display = 'none';
+                    }
                 }
             });
         });
@@ -673,14 +685,29 @@
             
             // 정확도 연습 초기화
             totalAttemptsSelect.value = '';
-            document.getElementById('accuracyResults').style.display = 'none';
-            document.getElementById('attemptButtons').innerHTML = '';
+            const accuracyResults = document.getElementById('accuracyResults');
+            if (accuracyResults) {
+                accuracyResults.style.display = 'none';
+            }
+            const attemptGrid = document.getElementById('attemptGrid');
+            if (attemptGrid) {
+                attemptGrid.innerHTML = '';
+            }
             
             // 거리 연습 초기화
-            document.getElementById('targetDistance').value = '';
+            const targetDistance = document.getElementById('targetDistance');
+            if (targetDistance) {
+                targetDistance.value = '';
+            }
             attemptCountSelect.value = '';
-            document.getElementById('distanceResults').style.display = 'none';
-            document.getElementById('distanceInputs').innerHTML = '';
+            const distanceResults = document.getElementById('distanceResults');
+            if (distanceResults) {
+                distanceResults.style.display = 'none';
+            }
+            const distanceInputs = document.getElementById('distanceInputs');
+            if (distanceInputs) {
+                distanceInputs.innerHTML = '';
+            }
             
             // 연습 유형 섹션 숨김
             accuracyPractice.style.display = 'none';
