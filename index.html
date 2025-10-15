@@ -897,8 +897,8 @@
             document.querySelector('.records-actions').style.display = 'block';
         }
         
-        // 기록 삭제
-        async function deleteRecord(recordId) {
+        // 기록 삭제 (전역 함수로 설정)
+        window.deleteRecord = async function(recordId) {
             if (!confirm('이 기록을 삭제하시겠습니까?')) {
                 return;
             }
