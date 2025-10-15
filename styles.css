@@ -758,11 +758,12 @@ textarea:focus {
     font-size: 14px;
     color: #2c3e50;
     font-weight: 500;
-    padding: 8px 12px;
+    padding: 10px 15px;
     border-radius: 8px;
     transition: all 0.3s ease;
     background: #f8f9fa;
-    border: 2px solid transparent;
+    border: 2px solid #e9ecef;
+    min-height: 44px;
 }
 
 .radio-label:hover {
@@ -775,12 +776,13 @@ textarea:focus {
 }
 
 .radio-custom {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     border: 2px solid #ddd;
     border-radius: 50%;
     position: relative;
     transition: all 0.3s ease;
+    flex-shrink: 0;
 }
 
 .radio-input:checked + .radio-custom {
@@ -803,6 +805,11 @@ textarea:focus {
 .radio-input:checked ~ span {
     color: #3498db;
     font-weight: 600;
+}
+
+.radio-label:has(.radio-input:checked) {
+    background: #e3f2fd;
+    border-color: #3498db;
 }
 
 .user-radio-group {
@@ -833,48 +840,42 @@ textarea:focus {
     text-align: center;
 }
 
-.result-type-selector {
+.attempt-grid {
+    margin-bottom: 20px;
+}
+
+.attempt-row {
+    margin-bottom: 15px;
+}
+
+.attempt-number-row,
+.attempt-o-row,
+.attempt-x-row {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 8px;
     justify-content: center;
+    margin-bottom: 5px;
 }
 
-.result-type-btn {
-    padding: 10px 20px;
-    border: 2px solid #ddd;
-    border-radius: 25px;
-    background: white;
-    color: #666;
+.attempt-number-cell {
+    width: 50px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
     font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 14px;
-}
-
-.result-type-btn:hover {
-    border-color: #3498db;
+    color: #666;
     background: #f8f9fa;
+    border-radius: 6px;
 }
 
-.result-type-btn.active {
-    background: #3498db;
-    border-color: #3498db;
-    color: white;
-}
-
-.attempt-buttons {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.attempt-btn {
-    width: 60px;
-    height: 60px;
+.attempt-o-cell,
+.attempt-x-cell {
+    width: 50px;
+    height: 40px;
     border: 2px solid #ddd;
-    border-radius: 10px;
+    border-radius: 8px;
     background: white;
     color: #666;
     font-weight: 600;
@@ -886,18 +887,23 @@ textarea:focus {
     font-size: 16px;
 }
 
-.attempt-btn:hover {
-    border-color: #3498db;
-    background: #f8f9fa;
+.attempt-o-cell:hover {
+    border-color: #27ae60;
+    background: #f8fff8;
 }
 
-.attempt-btn.success {
+.attempt-x-cell:hover {
+    border-color: #e74c3c;
+    background: #fff8f8;
+}
+
+.attempt-o-cell.selected {
     background: #27ae60;
     border-color: #27ae60;
     color: white;
 }
 
-.attempt-btn.failure {
+.attempt-x-cell.selected {
     background: #e74c3c;
     border-color: #e74c3c;
     color: white;

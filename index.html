@@ -162,12 +162,8 @@
                         </div>
                         <div id="accuracyResults" class="accuracy-results" style="display: none;">
                             <h4>결과 입력</h4>
-                            <div class="result-type-selector">
-                                <button type="button" class="result-type-btn active" data-type="success">성공 (O)</button>
-                                <button type="button" class="result-type-btn" data-type="failure">실패 (X)</button>
-                            </div>
-                            <div id="attemptButtons" class="attempt-buttons">
-                                <!-- 동적으로 생성될 버튼들 -->
+                            <div id="attemptGrid" class="attempt-grid">
+                                <!-- 동적으로 생성될 그리드 -->
                             </div>
                             <div class="accuracy-summary">
                                 <span>성공: <span id="successCount">0</span>회</span>
@@ -428,49 +424,80 @@
             });
         });
 
-        // 정확도 연습 버튼 생성
+        // 정확도 연습 그리드 생성
         function generateAccuracyButtons(attempts) {
-            const container = document.getElementById('attemptButtons');
+            const container = document.getElementById('attemptGrid');
             container.innerHTML = '';
             
-            // 결과 타입 선택 버튼 이벤트
-            const resultTypeBtns = document.querySelectorAll('.result-type-btn');
-            let currentResultType = 'success';
+            // 10개씩 행으로 나누기
+            const rows = Math.ceil(attempts / 10);
             
-            resultTypeBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    resultTypeBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    currentResultType = this.dataset.type;
-                });
-            });
-            
-            for (let i = 1; i <= attempts; i++) {
-                const button = document.createElement('button');
-                button.type = 'button';
-                button.className = 'attempt-btn';
-                button.textContent = i;
-                button.dataset.attempt = i;
-                button.dataset.result = '';
+            for (let row = 0; row < rows; row++) {
+                const rowContainer = document.createElement('div');
+                rowContainer.className = 'attempt-row';
                 
-                button.addEventListener('click', function() {
-                    const activeType = document.querySelector('.result-type-btn.active').dataset.type;
+                // 번호 행
+                const numberRow = document.createElement('div');
+                numberRow.className = 'attempt-number-row';
+                
+                // O 행
+                const oRow = document.createElement('div');
+                oRow.className = 'attempt-o-row';
+                
+                // X 행
+                const xRow = document.createElement('div');
+                xRow.className = 'attempt-x-row';
+                
+                const startNum = row * 10 + 1;
+                const endNum = Math.min(startNum + 9, attempts);
+                
+                for (let i = startNum; i <= endNum; i++) {
+                    // 번호 셀
+                    const numberCell = document.createElement('div');
+                    numberCell.className = 'attempt-number-cell';
+                    numberCell.textContent = i;
+                    numberRow.appendChild(numberCell);
                     
-                    if (this.dataset.result === activeType) {
-                        // 같은 타입이면 초기화
-                        this.dataset.result = '';
-                        this.textContent = i;
-                        this.className = 'attempt-btn';
-                    } else {
-                        // 선택된 타입으로 설정
-                        this.dataset.result = activeType;
-                        this.textContent = activeType === 'success' ? 'O' : 'X';
-                        this.className = `attempt-btn ${activeType}`;
-                    }
-                    updateAccuracySummary();
-                });
+                    // O 셀
+                    const oCell = document.createElement('button');
+                    oCell.type = 'button';
+                    oCell.className = 'attempt-o-cell';
+                    oCell.textContent = 'O';
+                    oCell.dataset.attempt = i;
+                    oCell.dataset.type = 'success';
+                    oRow.appendChild(oCell);
+                    
+                    // X 셀
+                    const xCell = document.createElement('button');
+                    xCell.type = 'button';
+                    xCell.className = 'attempt-x-cell';
+                    xCell.textContent = 'X';
+                    xCell.dataset.attempt = i;
+                    xCell.dataset.type = 'failure';
+                    xRow.appendChild(xCell);
+                    
+                    // O/X 클릭 이벤트
+                    [oCell, xCell].forEach(cell => {
+                        cell.addEventListener('click', function() {
+                            const attemptNum = this.dataset.attempt;
+                            const type = this.dataset.type;
+                            
+                            // 같은 시도 번호의 다른 셀들 초기화
+                            const sameAttemptCells = container.querySelectorAll(`[data-attempt="${attemptNum}"]`);
+                            sameAttemptCells.forEach(c => c.classList.remove('selected'));
+                            
+                            // 현재 셀 선택
+                            this.classList.add('selected');
+                            
+                            updateAccuracySummary();
+                        });
+                    });
+                }
                 
-                container.appendChild(button);
+                rowContainer.appendChild(numberRow);
+                rowContainer.appendChild(oRow);
+                rowContainer.appendChild(xRow);
+                container.appendChild(rowContainer);
             }
         }
         
@@ -504,13 +531,13 @@
         
         // 정확도 요약 업데이트
         function updateAccuracySummary() {
-            const buttons = document.querySelectorAll('.attempt-btn');
+            const selectedCells = document.querySelectorAll('.attempt-o-cell.selected, .attempt-x-cell.selected');
             let successCount = 0;
             let failureCount = 0;
             
-            buttons.forEach(btn => {
-                if (btn.dataset.result === 'success') successCount++;
-                else if (btn.dataset.result === 'failure') failureCount++;
+            selectedCells.forEach(cell => {
+                if (cell.dataset.type === 'success') successCount++;
+                else if (cell.dataset.type === 'failure') failureCount++;
             });
             
             const totalAttempts = successCount + failureCount;
