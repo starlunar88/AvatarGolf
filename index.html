@@ -935,7 +935,7 @@
             const ctx = document.getElementById('progressChartCanvas').getContext('2d');
             
             // 기존 차트가 있다면 제거
-            if (window.progressChart) {
+            if (window.progressChart && typeof window.progressChart.destroy === 'function') {
                 window.progressChart.destroy();
             }
             
@@ -1003,7 +1003,7 @@
             const ctx = document.getElementById('clubChartCanvas').getContext('2d');
             
             // 기존 차트가 있다면 제거
-            if (window.clubChart) {
+            if (window.clubChart && typeof window.clubChart.destroy === 'function') {
                 window.clubChart.destroy();
             }
             
