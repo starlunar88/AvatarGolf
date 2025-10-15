@@ -764,8 +764,11 @@ textarea:focus {
     background: #f8f9fa;
     border: 2px solid #e9ecef;
     min-height: 48px;
-    width: 100%;
+    min-width: 120px;
+    max-width: 150px;
     box-sizing: border-box;
+    justify-content: center;
+    text-align: center;
 }
 
 .radio-label:hover {
@@ -819,14 +822,16 @@ textarea:focus {
 
 .user-radio-group {
     display: flex;
-    gap: 12px;
+    gap: 15px;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 .club-radio-group {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    justify-items: center;
 }
 
 /* 정확도 연습 버튼 */
