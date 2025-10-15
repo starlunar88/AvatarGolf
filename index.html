@@ -270,20 +270,6 @@
                 
                 <div class="analysis-cards">
                     <div class="analysis-card">
-                        <h3>전체 통계</h3>
-                        <div id="overallStats" class="stats-content">
-                            <!-- Overall stats will be loaded here -->
-                        </div>
-                    </div>
-                    
-                    <div class="analysis-card">
-                        <h3>클럽별 성과</h3>
-                        <div id="clubStats" class="stats-content">
-                            <!-- Club stats will be loaded here -->
-                        </div>
-                    </div>
-                    
-                    <div class="analysis-card">
                         <h3>진보 추이</h3>
                         <div id="progressChart" class="chart-container">
                             <canvas id="progressChartCanvas" width="400" height="200"></canvas>
@@ -939,70 +925,6 @@
 
         // 분석 표시
         function displayAnalysis(records) {
-            // 전체 통계
-            const totalRecords = records.length;
-            const totalAttempts = records.reduce((sum, record) => {
-                return sum + (record.totalAttempts || record.attemptCount || 0);
-            }, 0);
-            
-            const accuracyRecords = records.filter(r => r.practiceType === 'accuracy');
-            const totalSuccess = accuracyRecords.reduce((sum, record) => sum + (record.successCount || 0), 0);
-            const totalAccuracyAttempts = accuracyRecords.reduce((sum, record) => sum + (record.totalAttempts || 0), 0);
-            const overallSuccessRate = totalAccuracyAttempts > 0 ? (totalSuccess / totalAccuracyAttempts * 100).toFixed(1) : 0;
-            
-            document.getElementById('overallStats').innerHTML = `
-                <div class="stat-item">
-                    <div class="stat-value">${totalRecords}</div>
-                    <div class="stat-label">총 연습 세션</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">${totalAttempts}</div>
-                    <div class="stat-label">총 시도 횟수</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">${overallSuccessRate}%</div>
-                    <div class="stat-label">전체 성공률</div>
-                </div>
-            `;
-            
-            // 클럽별 통계
-            const clubStats = {};
-            records.forEach(record => {
-                if (!clubStats[record.club]) {
-                    clubStats[record.club] = {
-                        totalRecords: 0,
-                        totalAttempts: 0,
-                        totalSuccess: 0,
-                        totalAccuracyAttempts: 0
-                    };
-                }
-                
-                clubStats[record.club].totalRecords++;
-                clubStats[record.club].totalAttempts += (record.totalAttempts || record.attemptCount || 0);
-                
-                if (record.practiceType === 'accuracy') {
-                    clubStats[record.club].totalSuccess += (record.successCount || 0);
-                    clubStats[record.club].totalAccuracyAttempts += (record.totalAttempts || 0);
-                }
-            });
-            
-            const clubStatsHTML = Object.entries(clubStats).map(([club, stats]) => {
-                const successRate = stats.totalAccuracyAttempts > 0 ? 
-                    (stats.totalSuccess / stats.totalAccuracyAttempts * 100).toFixed(1) : 0;
-                
-                return `
-                    <div class="club-stat">
-                        <div class="club-name">${club}</div>
-                        <div class="club-details">
-                            <span>${stats.totalRecords}회 연습</span>
-                            <span>성공률: ${successRate}%</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            
-            document.getElementById('clubStats').innerHTML = clubStatsHTML || '<div class="no-data">아직 데이터가 없습니다.</div>';
-            
             // 차트 생성
             createProgressChart(records);
             createClubComparisonChart(records);
