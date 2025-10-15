@@ -352,7 +352,7 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, onSnapshot, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
         
         // Firebase 설정
         const firebaseConfig = {
@@ -430,6 +430,19 @@
                         distanceResults.style.display = 'none';
                     }
                 }
+            });
+            
+            // 날짜 필터 이벤트
+            const filterDate = document.getElementById('filterDate');
+            const clearFilterBtn = document.getElementById('clearFilterBtn');
+            
+            filterDate.addEventListener('change', function() {
+                displayRecords();
+            });
+            
+            clearFilterBtn.addEventListener('click', function() {
+                filterDate.value = '';
+                displayRecords();
             });
         });
 
@@ -989,6 +1002,135 @@
             }).join('');
             
             document.getElementById('clubStats').innerHTML = clubStatsHTML || '<div class="no-data">아직 데이터가 없습니다.</div>';
+            
+            // 차트 생성
+            createProgressChart(records);
+            createClubComparisonChart(records);
+        }
+        
+        // 진보 추이 차트 생성
+        function createProgressChart(records) {
+            const ctx = document.getElementById('progressChartCanvas').getContext('2d');
+            
+            // 날짜별 데이터 정리
+            const dateStats = {};
+            records.forEach(record => {
+                const date = new Date(record.timestamp.seconds * 1000).toISOString().split('T')[0];
+                if (!dateStats[date]) {
+                    dateStats[date] = { 오세민: { success: 0, total: 0 }, 조재현: { success: 0, total: 0 } };
+                }
+                
+                if (record.practiceType === 'accuracy') {
+                    dateStats[date][record.user].success += record.successCount || 0;
+                    dateStats[date][record.user].total += record.totalAttempts || 0;
+                }
+            });
+            
+            const dates = Object.keys(dateStats).sort();
+            const oseminData = dates.map(date => {
+                const stats = dateStats[date].오세민;
+                return stats.total > 0 ? (stats.success / stats.total * 100).toFixed(1) : 0;
+            });
+            const jaehyunData = dates.map(date => {
+                const stats = dateStats[date].조재현;
+                return stats.total > 0 ? (stats.success / stats.total * 100).toFixed(1) : 0;
+            });
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: '오세민',
+                        data: oseminData,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: '조재현',
+                        data: jaehyunData,
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 클럽별 성공률 비교 차트 생성
+        function createClubComparisonChart(records) {
+            const ctx = document.getElementById('clubChartCanvas').getContext('2d');
+            
+            // 클럽별 데이터 정리
+            const clubStats = {};
+            records.forEach(record => {
+                if (!clubStats[record.club]) {
+                    clubStats[record.club] = { 오세민: { success: 0, total: 0 }, 조재현: { success: 0, total: 0 } };
+                }
+                
+                if (record.practiceType === 'accuracy') {
+                    clubStats[record.club][record.user].success += record.successCount || 0;
+                    clubStats[record.club][record.user].total += record.totalAttempts || 0;
+                }
+            });
+            
+            const clubs = Object.keys(clubStats);
+            const oseminData = clubs.map(club => {
+                const stats = clubStats[club].오세민;
+                return stats.total > 0 ? (stats.success / stats.total * 100).toFixed(1) : 0;
+            });
+            const jaehyunData = clubs.map(club => {
+                const stats = clubStats[club].조재현;
+                return stats.total > 0 ? (stats.success / stats.total * 100).toFixed(1) : 0;
+            });
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: clubs,
+                    datasets: [{
+                        label: '오세민',
+                        data: oseminData,
+                        backgroundColor: 'rgba(52, 152, 219, 0.8)',
+                        borderColor: '#3498db',
+                        borderWidth: 1
+                    }, {
+                        label: '조재현',
+                        data: jaehyunData,
+                        backgroundColor: 'rgba(231, 76, 60, 0.8)',
+                        borderColor: '#e74c3c',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         // 멤버 통계 로드
