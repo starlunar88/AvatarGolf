@@ -934,6 +934,11 @@
         function createProgressChart(records) {
             const ctx = document.getElementById('progressChartCanvas').getContext('2d');
             
+            // 기존 차트가 있다면 제거
+            if (window.progressChart) {
+                window.progressChart.destroy();
+            }
+            
             // 날짜별 데이터 정리
             const dateStats = {};
             records.forEach(record => {
@@ -958,7 +963,7 @@
                 return stats.total > 0 ? (stats.success / stats.total * 100).toFixed(1) : 0;
             });
             
-            new Chart(ctx, {
+            window.progressChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: dates,
@@ -997,6 +1002,11 @@
         function createClubComparisonChart(records) {
             const ctx = document.getElementById('clubChartCanvas').getContext('2d');
             
+            // 기존 차트가 있다면 제거
+            if (window.clubChart) {
+                window.clubChart.destroy();
+            }
+            
             // 클럽별 데이터 정리
             const clubStats = {};
             records.forEach(record => {
@@ -1020,7 +1030,7 @@
                 return stats.total > 0 ? (stats.success / stats.total * 100).toFixed(1) : 0;
             });
             
-            new Chart(ctx, {
+            window.clubChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: clubs,
