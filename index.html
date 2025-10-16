@@ -822,7 +822,15 @@
             let filteredRecords = practiceRecords;
             if (filterDate) {
                 filteredRecords = practiceRecords.filter(record => {
-                    const recordDate = new Date(record.timestamp.seconds * 1000).toISOString().split('T')[0];
+                    // date 필드가 있으면 사용하고, 없으면 timestamp에서 추출
+                    let recordDate;
+                    if (record.date) {
+                        recordDate = record.date;
+                    } else if (record.timestamp && record.timestamp.seconds) {
+                        recordDate = new Date(record.timestamp.seconds * 1000).toISOString().split('T')[0];
+                    } else {
+                        return false; // 날짜 정보가 없으면 필터에서 제외
+                    }
                     return recordDate === filterDate;
                 });
             }
@@ -834,11 +842,25 @@
             }
             
             recordsList.innerHTML = filteredRecords.map(record => {
-                const date = new Date(record.timestamp.seconds * 1000).toLocaleDateString('ko-KR');
-                const time = new Date(record.timestamp.seconds * 1000).toLocaleTimeString('ko-KR', { 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
-                });
+                // date 필드가 있으면 사용하고, 없으면 timestamp에서 추출
+                let date, time;
+                if (record.date) {
+                    date = new Date(record.date).toLocaleDateString('ko-KR');
+                    time = record.timestamp && record.timestamp.seconds ? 
+                        new Date(record.timestamp.seconds * 1000).toLocaleTimeString('ko-KR', { 
+                            hour: '2-digit', 
+                            minute: '2-digit' 
+                        }) : '시간 미상';
+                } else if (record.timestamp && record.timestamp.seconds) {
+                    date = new Date(record.timestamp.seconds * 1000).toLocaleDateString('ko-KR');
+                    time = new Date(record.timestamp.seconds * 1000).toLocaleTimeString('ko-KR', { 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    });
+                } else {
+                    date = '날짜 미상';
+                    time = '시간 미상';
+                }
                 
                 let recordDetails = '';
                 if (record.practiceType === 'accuracy') {
@@ -958,7 +980,16 @@
             // 날짜별 데이터 정리
             const dateStats = {};
             records.forEach(record => {
-                const date = new Date(record.timestamp.seconds * 1000).toISOString().split('T')[0];
+                // date 필드가 있으면 사용하고, 없으면 timestamp에서 추출
+                let date;
+                if (record.date) {
+                    date = record.date;
+                } else if (record.timestamp && record.timestamp.seconds) {
+                    date = new Date(record.timestamp.seconds * 1000).toISOString().split('T')[0];
+                } else {
+                    return; // 날짜 정보가 없으면 건너뛰기
+                }
+                
                 if (!dateStats[date]) {
                     dateStats[date] = { 오세민: { success: 0, total: 0 }, 조재현: { success: 0, total: 0 } };
                 }
@@ -1094,7 +1125,16 @@
             const dateStats = {};
             records.forEach(record => {
                 if (record.practiceType === 'distance' && record.targetDistance && record.averageDistance) {
-                    const date = new Date(record.timestamp.seconds * 1000).toISOString().split('T')[0];
+                    // date 필드가 있으면 사용하고, 없으면 timestamp에서 추출
+                    let date;
+                    if (record.date) {
+                        date = record.date;
+                    } else if (record.timestamp && record.timestamp.seconds) {
+                        date = new Date(record.timestamp.seconds * 1000).toISOString().split('T')[0];
+                    } else {
+                        return; // 날짜 정보가 없으면 건너뛰기
+                    }
+                    
                     if (!dateStats[date]) {
                         dateStats[date] = { 오세민: [], 조재현: [] };
                     }
