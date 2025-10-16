@@ -282,6 +282,20 @@
                             <canvas id="clubChartCanvas" width="400" height="200"></canvas>
                         </div>
                     </div>
+                    
+                    <div class="analysis-card">
+                        <h3>거리 정확도 추이</h3>
+                        <div id="distanceAccuracyChart" class="chart-container">
+                            <canvas id="distanceAccuracyCanvas" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-card">
+                        <h3>거리 일관성</h3>
+                        <div id="distanceConsistencyChart" class="chart-container">
+                            <canvas id="distanceConsistencyCanvas" width="400" height="200"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -928,6 +942,8 @@
             // 차트 생성
             createProgressChart(records);
             createClubComparisonChart(records);
+            createDistanceAccuracyChart(records);
+            createDistanceConsistencyChart(records);
         }
         
         // 진보 추이 차트 생성
@@ -1059,6 +1075,174 @@
                                     return value + '%';
                                 }
                             }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 거리 정확도 추이 차트 생성
+        function createDistanceAccuracyChart(records) {
+            const ctx = document.getElementById('distanceAccuracyCanvas').getContext('2d');
+            
+            // 기존 차트가 있다면 제거
+            if (window.distanceAccuracyChart && typeof window.distanceAccuracyChart.destroy === 'function') {
+                window.distanceAccuracyChart.destroy();
+            }
+            
+            // 날짜별 거리 정확도 데이터 정리
+            const dateStats = {};
+            records.forEach(record => {
+                if (record.practiceType === 'distance' && record.targetDistance && record.averageDistance) {
+                    const date = new Date(record.timestamp.seconds * 1000).toISOString().split('T')[0];
+                    if (!dateStats[date]) {
+                        dateStats[date] = { 오세민: [], 조재현: [] };
+                    }
+                    
+                    // 목표 거리 대비 실제 거리의 정확도 계산 (100%에서 벗어난 정도)
+                    const accuracy = Math.abs(100 - (record.averageDistance / record.targetDistance * 100));
+                    dateStats[date][record.user].push(accuracy);
+                }
+            });
+            
+            const dates = Object.keys(dateStats).sort();
+            const oseminData = dates.map(date => {
+                const accuracies = dateStats[date].오세민;
+                return accuracies.length > 0 ? (accuracies.reduce((a, b) => a + b, 0) / accuracies.length).toFixed(1) : null;
+            }).filter(val => val !== null);
+            
+            const jaehyunData = dates.map(date => {
+                const accuracies = dateStats[date].조재현;
+                return accuracies.length > 0 ? (accuracies.reduce((a, b) => a + b, 0) / accuracies.length).toFixed(1) : null;
+            }).filter(val => val !== null);
+            
+            // 유효한 데이터가 있는 날짜만 필터링
+            const validDates = dates.filter(date => {
+                const oseminAcc = dateStats[date].오세민;
+                const jaehyunAcc = dateStats[date].조재현;
+                return oseminAcc.length > 0 || jaehyunAcc.length > 0;
+            });
+            
+            const oseminValidData = validDates.map(date => {
+                const accuracies = dateStats[date].오세민;
+                return accuracies.length > 0 ? (accuracies.reduce((a, b) => a + b, 0) / accuracies.length).toFixed(1) : 0;
+            });
+            
+            const jaehyunValidData = validDates.map(date => {
+                const accuracies = dateStats[date].조재현;
+                return accuracies.length > 0 ? (accuracies.reduce((a, b) => a + b, 0) / accuracies.length).toFixed(1) : 0;
+            });
+            
+            window.distanceAccuracyChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: validDates,
+                    datasets: [{
+                        label: '오세민',
+                        data: oseminValidData,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: '조재현',
+                        data: jaehyunValidData,
+                        borderColor: '#27ae60',
+                        backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '정확도 오차 (%)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '낮을수록 정확함 (0% = 완벽한 정확도)'
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 거리 일관성 차트 생성
+        function createDistanceConsistencyChart(records) {
+            const ctx = document.getElementById('distanceConsistencyCanvas').getContext('2d');
+            
+            // 기존 차트가 있다면 제거
+            if (window.distanceConsistencyChart && typeof window.distanceConsistencyChart.destroy === 'function') {
+                window.distanceConsistencyChart.destroy();
+            }
+            
+            // 클럽별 거리 일관성 데이터 정리
+            const clubStats = {};
+            records.forEach(record => {
+                if (record.practiceType === 'distance' && record.distances && record.distances.length > 1) {
+                    if (!clubStats[record.club]) {
+                        clubStats[record.club] = { 오세민: [], 조재현: [] };
+                    }
+                    
+                    // 표준편차 계산 (일관성 측정)
+                    const distances = record.distances;
+                    const mean = distances.reduce((a, b) => a + b, 0) / distances.length;
+                    const variance = distances.reduce((sum, dist) => sum + Math.pow(dist - mean, 2), 0) / distances.length;
+                    const standardDeviation = Math.sqrt(variance);
+                    
+                    clubStats[record.club][record.user].push(standardDeviation);
+                }
+            });
+            
+            const clubs = Object.keys(clubStats);
+            const oseminData = clubs.map(club => {
+                const deviations = clubStats[club].오세민;
+                return deviations.length > 0 ? (deviations.reduce((a, b) => a + b, 0) / deviations.length).toFixed(2) : 0;
+            });
+            
+            const jaehyunData = clubs.map(club => {
+                const deviations = clubStats[club].조재현;
+                return deviations.length > 0 ? (deviations.reduce((a, b) => a + b, 0) / deviations.length).toFixed(2) : 0;
+            });
+            
+            window.distanceConsistencyChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: clubs,
+                    datasets: [{
+                        label: '오세민',
+                        data: oseminData,
+                        backgroundColor: 'rgba(52, 152, 219, 0.8)',
+                        borderColor: '#3498db',
+                        borderWidth: 1
+                    }, {
+                        label: '조재현',
+                        data: jaehyunData,
+                        backgroundColor: 'rgba(39, 174, 96, 0.8)',
+                        borderColor: '#27ae60',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '표준편차 (m)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '낮을수록 일관성 좋음'
                         }
                     }
                 }
