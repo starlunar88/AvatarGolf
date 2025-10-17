@@ -1003,11 +1003,11 @@
             const dates = Object.keys(dateStats).sort();
             const oseminData = dates.map(date => {
                 const stats = dateStats[date].오세민;
-                return stats.total > 0 ? (stats.success / stats.total * 100).toFixed(1) : 0;
+                return stats.total > 0 ? (stats.success / stats.total * 100).toFixed(1) : null;
             });
             const jaehyunData = dates.map(date => {
                 const stats = dateStats[date].조재현;
-                return stats.total > 0 ? (stats.success / stats.total * 100).toFixed(1) : 0;
+                return stats.total > 0 ? (stats.success / stats.total * 100).toFixed(1) : null;
             });
             
             window.progressChart = new Chart(ctx, {
@@ -1070,11 +1070,11 @@
             const clubs = Object.keys(clubStats);
             const oseminData = clubs.map(club => {
                 const stats = clubStats[club].오세민;
-                return stats.total > 0 ? (stats.success / stats.total * 100).toFixed(1) : 0;
+                return stats.total > 0 ? (stats.success / stats.total * 100).toFixed(1) : null;
             });
             const jaehyunData = clubs.map(club => {
                 const stats = clubStats[club].조재현;
-                return stats.total > 0 ? (stats.success / stats.total * 100).toFixed(1) : 0;
+                return stats.total > 0 ? (stats.success / stats.total * 100).toFixed(1) : null;
             });
             
             window.clubChart = new Chart(ctx, {
@@ -1242,12 +1242,12 @@
             const clubs = Object.keys(clubStats);
             const oseminData = clubs.map(club => {
                 const deviations = clubStats[club].오세민;
-                return deviations.length > 0 ? (deviations.reduce((a, b) => a + b, 0) / deviations.length).toFixed(2) : 0;
+                return deviations.length > 0 ? (deviations.reduce((a, b) => a + b, 0) / deviations.length).toFixed(2) : null;
             });
             
             const jaehyunData = clubs.map(club => {
                 const deviations = clubStats[club].조재현;
-                return deviations.length > 0 ? (deviations.reduce((a, b) => a + b, 0) / deviations.length).toFixed(2) : 0;
+                return deviations.length > 0 ? (deviations.reduce((a, b) => a + b, 0) / deviations.length).toFixed(2) : null;
             });
             
             window.distanceConsistencyChart = new Chart(ctx, {
